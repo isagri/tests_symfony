@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping
+        xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+        xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+
+    <entity repository-class="Eliberty\RedpillBundle\Entity\Repository\ContactRepository" name="Eliberty\RedpillBundle\Entity\Contact" table="contacts">
+        <gedmo:loggable log-entry-class="Gedmo\Loggable\Entity\LogEntry"/>
+        <id name="id" type="integer" column="id">
+            <generator strategy="IDENTITY"/>
+        </id>
+        <field name="title" type="enumcontacttitle" column="title" length="16" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="lastname" type="string" column="lastname" length="64" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="firstname" type="string" column="firstname" length="64" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="lastnameCanonical" type="string" column="lastname_canonical" length="64" nullable="true"/>
+        <field name="firstnameCanonical" type="string" column="firstname_canonical" length="64" nullable="true"/>
+        <field name="hash" type="string" column="hash" length="40" nullable="true"/>
+
+        <field name="birthdate" type="date" column="birthdate" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="externalId" type="string" column="external_id" length="40" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="gender" type="string" column="gender" length="16" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="language" type="string" column="language" length="16" nullable="true">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="status" type="enumcontactstatus" column="status" length="16" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="phone"  type="string" column="phone" length="32" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="mobile" type="string" column="mobile" length="32" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="email" type="string" column="email" length="250" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="optIn" type="boolean" column="opt_in" nullable="false">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="acceptPartnerCommercial" type="boolean" column="accept_partnercommercial" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="cashdeskId" type="string" column="cashdesk_id" length="250" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="externalReference" type="string" column="external_reference" length="250" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="preferentialCode" type="string" column="preferential_code" length="50" nullable="true">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="partnerOptin" type="boolean" column="partner_optin" nullable="true"/>
+        <field name="dirty" type="boolean" column="dirty" nullable="false">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="studentAt" type="datetime" column="student_at" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="insuredAt" type="datetime" column="insured_at" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="enrolledAt" type="datetime" column="enrolled_at" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="renewedAt" type="datetime" column="renewed_at" nullable="true">
+            <gedmo:versioned/>
+        </field>
+        <field name="terminatedAt" type="datetime" column="terminated_at" nullable="true">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="pictureOptout" type="boolean" column="picture_optout" nullable="false">
+            <gedmo:versioned/>
+        </field>
+
+        <field name="createdAt" type="datetime" column="created_at" nullable="false">
+            <gedmo:timestampable on="create"/>
+        </field>
+        <field name="updatedAt" type="datetime" column="updated_at" nullable="false">
+            <gedmo:timestampable on="update"/>
+        </field>
+
+        <one-to-one field="user" target-entity="Eliberty\RedpillBundle\Entity\User" inversed-by="contact">
+            <join-columns>
+                <join-column name="user_id" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-one>
+
+        <one-to-many field="orders" target-entity="Eliberty\RedpillBundle\Entity\Order" mapped-by="contact"/>
+        <one-to-many field="assets" target-entity="Eliberty\RedpillBundle\Entity\Asset" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+            </cascade>
+            <order-by>
+                <order-by-field name="createdAt" direction="DESC"/>
+            </order-by>
+        </one-to-many>
+        <one-to-many field="orderitems" target-entity="Eliberty\RedpillBundle\Entity\TicketOrderitem" mapped-by="skier"/>
+
+        <one-to-many field="cashdeskdata" target-entity="Eliberty\RedpillBundle\Entity\CashDeskData" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+            </cascade>
+            <order-by>
+                <order-by-field name="purchaseAt" direction="ASC"/>
+            </order-by>
+        </one-to-many>
+
+        <one-to-many field="skidays" target-entity="Eliberty\RedpillBundle\Entity\Skiday" mapped-by="skier"/>
+        <one-to-many field="skiers" target-entity="Eliberty\RedpillBundle\Entity\Contact" mapped-by="payer" index-by="id">
+            <cascade>
+                <cascade-persist/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="addresses" target-entity="Eliberty\RedpillBundle\Entity\Address" mapped-by="contact" index-by="id" >
+            <cascade >
+                <cascade-persist />
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+            <order-by>
+                <order-by-field name="id" direction="ASC"/>
+            </order-by>
+        </one-to-many>
+
+        <one-to-many field="keycards" target-entity="Eliberty\RedpillBundle\Entity\Keycard" mapped-by="contact" index-by="id" >
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+            <order-by>
+                <order-by-field name="expiredAt" direction="DESC" />
+                <order-by-field name="id" direction="DESC" />
+            </order-by>
+        </one-to-many>
+
+        <one-to-many field="documents" target-entity="Eliberty\RedpillBundle\Entity\Document" mapped-by="contact" index-by="id">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="payerskidays" target-entity="Eliberty\RedpillBundle\Entity\Skiday" mapped-by="payer"/>
+        <one-to-many field="externalreferences" target-entity="Eliberty\RedpillBundle\Entity\ExternalReference" mapped-by="contact"/>
+        <one-to-many field="paymentmeans" target-entity="Eliberty\RedpillBundle\Entity\PaymentMean" mapped-by="contact">
+            <order-by>
+                <order-by-field name="id" direction="ASC" />
+            </order-by>
+        </one-to-many>
+        <one-to-many field="trackings" target-entity="Eliberty\RedpillBundle\Entity\Tracking" mapped-by="contact"/>
+
+        <one-to-many field="permissions" target-entity="Eliberty\RedpillBundle\Entity\Permission" mapped-by="contact">
+            <order-by>
+                <order-by-field name="current" direction="DESC"/>
+                <order-by-field name="id" direction="DESC"/>
+            </order-by>
+        </one-to-many>
+
+        <many-to-one field="contractor" target-entity="Eliberty\RedpillBundle\Entity\Contractor" inversed-by="contacts">
+            <join-columns>
+                <join-column name="contractor_id" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+            <gedmo:versioned/>
+        </many-to-one>
+
+        <many-to-one field="partner" target-entity="Eliberty\RedpillBundle\Entity\Partner" inversed-by="affiliated">
+            <join-columns>
+                <join-column name="partner_id" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+            <gedmo:versioned/>
+        </many-to-one>
+
+        <many-to-one field="payer" target-entity="Eliberty\RedpillBundle\Entity\Contact" inversed-by="skiers">
+            <join-columns>
+                <join-column name="payer_id" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+            <gedmo:versioned/>
+        </many-to-one>
+
+        <many-to-many field="rights" target-entity="Eliberty\RedpillBundle\Entity\Right" inversed-by="contacts">
+            <join-table name="contact_right">
+                <join-columns>
+                    <join-column name="contact_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="right_id" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+            <gedmo:versioned/>
+        </many-to-many>
+
+        <many-to-one field="webinstance" target-entity="Eliberty\RedpillBundle\Entity\WebInstance" inversed-by="contacts">
+            <join-columns>
+                <join-column name="webinstance_id" referenced-column-name="id" nullable="false"/>
+            </join-columns>
+            <gedmo:versioned/>
+        </many-to-one>
+
+        <one-to-many field="histories" target-entity="Eliberty\RedpillBundle\Entity\History" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <field name="oldIdContact" type="string" column="oldidcontact" length="64" nullable="true"/>
+        <field name="externalGuid" type="string" column="external_guid" length="64" nullable="true"/>
+
+        <field name="data" column="data" type="json_array_text" nullable="true" />
+        <field name="datacustom" column="data_customs" type="json_array_text" nullable="true" />
+
+        <one-to-many field="affiliatedOrders" target-entity="Eliberty\RedpillBundle\Entity\Order" mapped-by="owner"/>
+        <one-to-many field="apartments" target-entity="Eliberty\RedpillBundle\Entity\Apartment" mapped-by="owner"/>
+
+        <one-to-many field="externalnumbers" target-entity="Eliberty\RedpillBundle\Entity\ExternalNumber" mapped-by="contact"/>
+
+        <one-to-many field="coupons" target-entity="Eliberty\RedpillBundle\Entity\Coupon" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <many-to-one field="groupinstance" target-entity="Eliberty\RedpillBundle\Entity\GroupInstance" inversed-by="contacts">
+            <join-columns>
+                <join-column name="groupinstance_id" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <one-to-many field="vouchercodes" target-entity="Eliberty\RedpillBundle\Entity\VoucherCode" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="followups" target-entity="Eliberty\RedpillBundle\Entity\FollowUp" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="keycardNumbers" target-entity="Eliberty\RedpillBundle\Entity\KeycardNumber" mapped-by="contact" >
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="sponsors" target-entity="Eliberty\RedpillBundle\Entity\Sponsorship" mapped-by="godchild">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="godchildren" target-entity="Eliberty\RedpillBundle\Entity\Sponsorship" mapped-by="sponsor">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="messagestracking" target-entity="Eliberty\RedpillBundle\Entity\MessageTracking" mapped-by="contact">
+            <order-by>
+                <order-by-field name="updatedAt" direction="DESC"/>
+            </order-by>
+        </one-to-many>
+
+        <one-to-many field="cashdeskSales" target-entity="Eliberty\RedpillBundle\Entity\CashdeskSale" mapped-by="contact">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+            </cascade>
+        </one-to-many>
+    </entity>
+</doctrine-mapping>
